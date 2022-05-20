@@ -1,0 +1,29 @@
+server:
+  port: 80
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://linuxserver.cn/test
+    username: test
+    password: test
+    hikari:
+      maximum-pool-size: 2
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+  rabbitmq:
+    host: linuxserver.cn
+    username: test
+    password: test
+    connection-timeout: 10000
+    listener:
+      simple:
+        concurrency: 1
+        max-concurrency: 2
+        prefetch: 5
+        acknowledge-mode: MANUAL
+        retry:
+          enabled: true
+          initial-interval: 5000
