@@ -28,31 +28,54 @@ public class DoubanNovelController {
         this.doubanNovelRepository = doubanNovelRepository;
     }
 
+    /**
+     * 根据ID查询豆瓣小说
+     * @param id
+     * @return
+     */
     @GetMapping("/novel/{id}")
     public ResultTemplate<DoubanNovel> findOneDoubanNovel(@PathVariable("id") Integer id) {
         Optional<DoubanNovel> doubanNovel = doubanNovelRepository.findById(id);
         return ResultTemplate.data(doubanNovel.orElseThrow(() -> new IllegalInputParamException("不存在的ID：%d".formatted(id)))).success();
     }
 
+    /**
+     * 豆瓣小说分页查询
+     * @param pageParam
+     * @param novel
+     * @return
+     */
     @GetMapping("/novel/list")
     public ResultTemplate<PageTemplate<DoubanNovel>> listPaged(PageParam pageParam, DoubanNovel novel) {
         Page<DoubanNovel> novels = doubanNovelRepository.findAll(Example.of(Optional.ofNullable(novel).orElseGet(DoubanNovel::new)),
-                PageRequest.of(pageParam.page(), pageParam.pageSize(), Sort.by(Sort.Order.asc("id"))));
+                PageRequest.of(pageParam.page() - 1, pageParam.pageSize(), Sort.by(Sort.Order.asc("id"))));
         return ResultTemplate.data(PageTemplate.of(novels.getContent(), novels.getTotalElements(), novels.getTotalPages())).success();
     }
 
+    /**
+     * 获取豆瓣小说类型列表
+     * @return 类型列表
+     */
     @GetMapping("/novel/category/kinds")
     public ResultTemplate<List<String>> listNovelKinds() {
         List<String> novelKind = doubanNovelRepository.findAllDoubanNovelKind();
         return ResultTemplate.data(novelKind).success();
     }
 
+    /**
+     * 获取豆瓣小说标签列表
+     * @return
+     */
     @GetMapping("/novel/category/tags")
     public ResultTemplate<List<String>> listNovelTags() {
         List<String> novelTag = doubanNovelRepository.findAllDoubanNovelTag();
         return ResultTemplate.data(novelTag).success();
     }
 
+    /**
+     * 获取豆瓣小说状态列表
+     * @return
+     */
     @GetMapping("/novel/category/status")
     public ResultTemplate<List<String>> listNovelStatus() {
         List<String> novelStatus = doubanNovelRepository.findAllDoubanNovelStatus();
